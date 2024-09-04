@@ -9,8 +9,9 @@ class CourseAPIView(APIView):
     """
     Course API
     """
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
-        permission_classes = [IsAuthenticated]
         courses = Course.objects.all()
         serializer = CourseSerializer(courses, many=True)
 
@@ -20,9 +21,9 @@ class EvaluationAPIView(APIView):
     """
     Evaluation API
     """
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        permission_classes = [IsAuthenticated]
         evaluations = Evaluation.objects.all()
         serializer = EvaluationSerializer(evaluations, many=True)
 
