@@ -1,30 +1,34 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics
+from rest_framework.generics import get_object_or_404
 
-from .models import Course, Evaluation
+from.models import Course, Evaluation
 from .serializers import CourseSerializer, EvaluationSerializer
 
-class CourseAPIView(APIView):
-    """
-    Course API
-    """
-    permission_classes = [IsAuthenticated]
+class CoursesAPIView(generics.ListCreateAPIView):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
 
-    def get(self, request):
-        courses = Course.objects.all()
-        serializer = CourseSerializer(courses, many=True)
+class CourseAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
 
-        return Response(serializer.data)
+class EvaluationsAPIView(generics.ListCreateAPIView):
+    queryset = Evaluation.objects.all()
+    serializer_class = EvaluationSerializer
 
-class EvaluationAPIView(APIView):
-    """
-    Evaluation API
-    """
-    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        if self.kwargs.get('course_pk'):
+            return self.queryset.filter(course_id=self.kwargs.get('course_pk'))
+        return self.queryset.all()
 
-    def get(self, request):
-        evaluations = Evaluation.objects.all()
-        serializer = EvaluationSerializer(evaluations, many=True)
+    
+class EvaluateAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Evaluation.objects.all()
+    serializer_class = EvaluationSerializer
 
-        return Response(serializer.data)
+    def get_object(self):
+        if self.kwargs.get('course_pk'):
+            return get_object_or_404(self.queryset.filter(), 
+                                            course_id=self.kwargs.get('course_pk'),
+                                            pk=self.kwargs.get('evaluation_pk'))
+        return get_object_or_404(self.get_queryset(), pk=self.kwargs.get('evaluation_pk'))

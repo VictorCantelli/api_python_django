@@ -1,6 +1,9 @@
 from django.contrib import admin
+from rest_framework.authtoken.admin import TokenAdmin
 
 from .models import Course, Evaluation
+
+TokenAdmin.raw_id_fields = ['user']
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
