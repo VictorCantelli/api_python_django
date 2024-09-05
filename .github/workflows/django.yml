@@ -10,12 +10,12 @@ jobs:
   security:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: '3.10'  # Use uma versão estável suportada pelo Snyk
+          python-version: '3.10'
 
       - name: Create virtual environment
         run: python -m venv venv
@@ -25,7 +25,11 @@ jobs:
           source venv/bin/activate
           python -m pip install --upgrade pip
           pip install --no-cache-dir -r requirements.txt || true
-          pip install snyk
+
+      - name: Install Snyk CLI
+        run: |
+          curl -sL https://github.com/snyk/snyk/releases/download/v1.120.1/snyk-linux -o /usr/local/bin/snyk
+          chmod +x /usr/local/bin/snyk
 
       - name: Run Snyk to check for vulnerabilities
         run: |
