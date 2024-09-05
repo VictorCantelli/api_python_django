@@ -7,8 +7,18 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/python-3.10@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
+
+  setupDjango:
+    name: Setup Django
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
@@ -28,3 +38,4 @@ jobs:
     - name: Run Tests
       run: |
         python manage.py test
+
